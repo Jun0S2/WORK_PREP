@@ -8,56 +8,70 @@ author : June Park
 
 using namespace std;
 
-static int yyyy,mm;
-static int mdays[] = {31,28,31,30,31,30,31,31,30,31,30,31} ;
-static string date[] = {"Sun", "Mon", "Tue", "Wed", "Thu","Fri","Sat"};
+/** global variables */
+static int yyyy,mm; 													/* input year, input month */
+static int mdays[] = {31,28,31,30,31,30,31,31,30,31,30,31} ;			/* days in month		   */
+static string date[] = {"Sun", "Mon", "Tue", "Wed", "Thu","Fri","Sat"}; /* weekdays				   */
  
-void printMenu();
-int setdays(int,int);//해당 년월의 총 날짜수 리턴 
-bool isLeap(int);
-int getFirstDay(int,int) ;//해당 월의 1일이 몇요일인지 리 
-void printCalendar(int,int);
+/** functions */
+void userInput(); 						/* Get User Input */
+int setdays(int,int);					/* Return how many days are in input month (w. leap 처리) */
+bool isLeap(int);						/* Return true if leap, else false */
+int getFirstDay(int,int) ;				/* Return what date is the first day of the user selected month */
+void printCalendar(int,int); 			/* Print calendar */
+void simulate(); 						/* Get User Input and print calendar */
+bool loop(); 							/* Used to create loop until user wants to stop*/
 
-/**
-Get input from user -> we then knows how many days are in at that month
-Then, we need to know where 1st lands on weekdays
-*/
+
 int main(){
-	printMenu(); 
-	int days = setdays(yyyy,mm);
-	printCalendar(getFirstDay(yyyy,mm),mm);
-	return 0;	
+	while(loop()){
+		cin.clear();
+		simulate();
+	}
+	return 0;
 }
 
-/**
-printMenu() : get year and month 
-*/
-void printMenu(){
-	ios::sync_with_stdio(0);
-	cin.tie(0);
+bool loop(){
+	bool contLoop = true;
+	char qc;
+	
+	while(true){
+		
+		cout<<"Press 'q' to quit or 'c' to continue: ";
+		cin>>qc;
+		if(qc != 'q' && qc != 'c') continue;
+		else if (qc=='q') return false;
+		else return true;
+	}
+}
+
+void simulate() {
+	userInput(); 
+	int days = setdays(yyyy,mm);
+	printCalendar(getFirstDay(yyyy,mm),mm);
+}
+
+
+void userInput(){
 	
 	cout<<"[Select Year] "<<endl;
 	cin>>yyyy;
 	
 	cout<<"\n[Select Month] "<<endl;
 	cin>>mm;
-	
-	cout<<"\n=================================="<<endl;
-	cout<<"\t"<<yyyy<<"   년	"<<mm<<" 월"<<endl;
-	cout<<"=================================="<<endl;
 }
 
-/**
-setdays(년,월) : 해당 년월의 일수를 반환한 
-*/
+
 int setdays(int year, int month){
-	if(isLeap(year) && month == 2 ) return 29;
-	else return mdays[month];
+	if(isLeap(year) && month == 2 ) {
+		mdays[1] = 29;
+		return 29;
+	}
+	
+	else if(month ==2 ) { mdays[1] = 28; }
+	return mdays[month];	
 }
 
-/**
-isLeap(년) : 1 - 윤년, 0 - 윤년X 
-*/
 bool isLeap(int year){
 	if((year%4)==0 && (year %100)!=0 || (year%400) ==0) return true;
 	else return false;
@@ -84,12 +98,13 @@ int getFirstDay(int year, int month){
 	return total_days%7;  
 } 
 
-/**
-첫날이 몇요일인지 주어짐 
-만일, 첫날이 5라면 금요일 
-*/
 void printCalendar(int start,int month){
 	int c;
+		
+	cout<<"\n=================================="<<endl;
+	cout<<"\t"<<yyyy<<"   년	"<<mm<<" 월"<<endl;
+	cout<<"=================================="<<endl;
+
 	for(  c = 0 ; c<7; c++){
 		cout<<date[c]<<"  ";
 	}
@@ -106,6 +121,6 @@ void printCalendar(int start,int month){
 		++cnt;
 		if(cnt<10)cout<<"  "<<cnt<<"  "; 
 		else cout<<" "<<cnt<<"  ";
-		
 	} 
+	cout<<endl<<"=================================="<<endl;
 }
